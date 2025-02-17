@@ -17,10 +17,16 @@
         <div class="container">
             <div class="add-goal">
                 <input type="text" id="goal-input" placeholder="Enter your goal...">
+                <input type="date" id="deadline-input">
                 <select id="goal-category">
                     <option value="easy">Easy</option>
                     <option value="medium">Medium</option>
                     <option value="hard">Hard</option>
+                </select>
+                <select id="goal-progress">
+                    <option value="not-started">Not started</option>
+                    <option value="in-progress">In progress</option>
+                    <option value="completed">Completed</option>
                 </select>
                 <button onclick="addGoal()">Add Goal</button>
             </div>
@@ -44,7 +50,8 @@
                 <p class="legend-item in-progress">In Progress</p>
                 <p class="legend-item all">All</p>
             </div>
-        </div>  
+        </div>
+        
     </div>
     <script src="script.js"></script>
 </body>
