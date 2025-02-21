@@ -91,6 +91,7 @@ h1 span:nth-child(15) {animation-delay: 1.5s;}
 h1 span:nth-child(16) {animation-delay: 1.6s;}
 h1 span:nth-child(17) {animation-delay: 1.7s;}
 h1 span:nth-child(18) {animation-delay: 1.8s;}
+
 .grid {
     display: grid;
     grid-template-columns: 3fr 2fr; 
@@ -110,6 +111,13 @@ h1 span:nth-child(18) {animation-delay: 1.8s;}
     margin: 4rem 1rem 2rem auto;
 }
 
+.grid2{
+    display: grid;
+    grid-template-rows: 50% 50%;
+    gap: 1rem;
+    max-height: 46rem;
+}
+
 .info-con{
     background: #1e1e1e;
     padding: 2rem;
@@ -120,13 +128,83 @@ h1 span:nth-child(18) {animation-delay: 1.8s;}
     justify-content: center;
     align-items: center;
     height: fit-content;
-    margin: 4rem auto 2rem 1rem;
+    margin: 4rem auto 12rem 1rem;
 }
+
+.calendar{
+    background: #1e1e1e;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    max-height: 21rem;
+    min-width: 30rem;
+    margin: 1rem auto 1rem 1rem;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+}
+
+.header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+}
+
+.header button{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #383837;
+    color: #e0e0e0;
+    border: none;
+    cursor: pointer;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 30%;
+}
+
+.days{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    text-align: center;
+}
+
+.dates{
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+}
+
+.date{
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 5px;
+    margin: auto;
+}
+
+.date.active{
+    border-radius: 30%;
+    background-color: #383837;
+    color: #e0e0e0;
+}
+.date.inactive{
+    color: #817878;
+}
+
+
+
+
+
+
 
 .chart-container {
     position: relative;
-    width: 250px;
-    height: 250px;
+    width: 16rem;
+    height: 16rem;
 }
 
 .chart-center {
@@ -332,10 +410,14 @@ button.disabled {
         margin-bottom: 0;
     }
     .info-con{
-        margin: 2rem auto 0 0;
+        margin: 0;
+        margin-top: 1rem;
     }
     .chart-container {
         margin-top: 0;
+    }
+    .calendar{
+        margin: 0;
     }
 }
 
