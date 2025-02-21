@@ -1,179 +1,179 @@
- function saveGoalsToLocalStorage() {
-        localStorage.setItem('goals', JSON.stringify(goals));
-    }
+function saveGoalsToLocalStorage() {
+    localStorage.setItem('goals', JSON.stringify(goals));
+}
 
-    function loadGoalsFromLocalStorage() {
-        const storedGoals = localStorage.getItem('goals');
-        if (storedGoals) {
-            console.log('Loaded goals from localStorage:', JSON.parse(storedGoals)); // Debug
-            return JSON.parse(storedGoals);
+function loadGoalsFromLocalStorage() {
+    const storedGoals = localStorage.getItem('goals');
+    if (storedGoals) {
+        console.log('Loaded goals from localStorage:', JSON.parse(storedGoals)); // Debug
+        return JSON.parse(storedGoals);
+    }
+    return {
+        easy: [],
+        medium: [],
+        hard: []
+    };
+}
+
+const goals = loadGoalsFromLocalStorage();
+let draggedCategory = null;
+let draggedIndex = null;
+
+function renderGoals() {
+    console.log('Rendering goals...'); // Debug
+    document.getElementById('easy-list').innerHTML = '';
+    document.getElementById('medium-list').innerHTML = '';
+    document.getElementById('hard-list').innerHTML = '';
+
+    const countgoals = {
+        completed: 0,
+        inProgress: 0,
+        total: 0
+    };
+
+    for (let category in goals) {
+        const list = document.getElementById(`${category}-list`);
+        if (!list) {
+            console.error(`Element ${category}-list not found in DOM!`); // Debug
+            continue;
         }
-        return {
-            easy: [],
-            medium: [],
-            hard: []
-        };
-    }
 
-    const goals = loadGoalsFromLocalStorage();
-    let draggedCategory = null;
-    let draggedIndex = null;
+        goals[category].forEach((goalObj, index) => {
+            const li = document.createElement('li');
+            li.draggable = true;
+            li.setAttribute('ondragstart', `dragStart(event, '${category}', ${index})`);
+            li.setAttribute('ondragover', `dragOver(event, '${category}', ${index})`);
+            li.setAttribute('ondragleave', `dragLeave(event, '${category}', ${index})`);
+            li.setAttribute('ondrop', `drop(event, '${category}', ${index})`);
 
-    function renderGoals() {
-        console.log('Rendering goals...'); // Debug
-        document.getElementById('easy-list').innerHTML = '';
-        document.getElementById('medium-list').innerHTML = '';
-        document.getElementById('hard-list').innerHTML = '';
+            const goalText = document.createElement('span');
+            goalText.textContent = goalObj.goal;
+            goalText.title = "Double click to edit";
+            goalText.ondblclick = () => startEditing(goalText, category, index);
 
-        const countgoals = {
-            completed: 0,
-            inProgress: 0,
-            total: 0
-        };
-
-        for (let category in goals) {
-            const list = document.getElementById(`${category}-list`);
-            if (!list) {
-                console.error(`Element ${category}-list not found in DOM!`); // Debug
-                continue;
+            if (goalObj.completed) {
+                li.classList.add('completed');
+                countgoals.completed++;
+            } else if (goalObj.inProgress) {
+                li.classList.add('in-progress');
+                countgoals.inProgress++;
             }
 
-            goals[category].forEach((goalObj, index) => {
-                const li = document.createElement('li');
-                li.draggable = true;
-                li.setAttribute('ondragstart', `dragStart(event, '${category}', ${index})`);
-                li.setAttribute('ondragover', `dragOver(event, '${category}', ${index})`);
-                li.setAttribute('ondragleave', `dragLeave(event, '${category}', ${index})`);
-                li.setAttribute('ondrop', `drop(event, '${category}', ${index})`);
+            countgoals.total++;
 
-                const goalText = document.createElement('span');
-                goalText.textContent = goalObj.goal;
-                goalText.title = "Double click to edit";
-                goalText.ondblclick = () => startEditing(goalText, category, index);
+            const btnGroup = document.createElement('div');
+            btnGroup.classList.add('btn-group');
 
-                if (goalObj.completed) {
-                    li.classList.add('completed');
-                    countgoals.completed++;
-                } else if (goalObj.inProgress) {
-                    li.classList.add('in-progress');
-                    countgoals.inProgress++;
-                }
+            const doneButton = document.createElement('button');
+            doneButton.classList.add('done');
+            doneButton.innerHTML = `<img src="done.svg" width="16" height="16">`;
+            doneButton.onclick = () => toggleComplete(doneButton, category, index);
 
-                countgoals.total++;
+            const inProgressButton = document.createElement('button');
+            inProgressButton.classList.add('in-progress');
+            inProgressButton.innerHTML = `<img src="inprogress.svg" width="20" height="20">`;
+            inProgressButton.onclick = () => toggleInProgress(inProgressButton, category, index);
 
-                const btnGroup = document.createElement('div');
-                btnGroup.classList.add('btn-group');
+            const deleteButton = document.createElement('button');
+            deleteButton.classList.add('delete');
+            deleteButton.innerHTML = `<img src="delete.svg" width="16" height="16">`;
+            deleteButton.onclick = () => deleteGoal(category, index);
 
-                const doneButton = document.createElement('button');
-                doneButton.classList.add('done');
-                doneButton.innerHTML = `<img src="done.svg" width="16" height="16">`;
-                doneButton.onclick = () => toggleComplete(doneButton, category, index);
+            btnGroup.appendChild(doneButton);
+            btnGroup.appendChild(inProgressButton);
+            btnGroup.appendChild(deleteButton);
 
-                const inProgressButton = document.createElement('button');
-                inProgressButton.classList.add('in-progress');
-                inProgressButton.innerHTML = `<img src="inprogress.svg" width="20" height="20">`;
-                inProgressButton.onclick = () => toggleInProgress(inProgressButton, category, index);
+            li.appendChild(goalText);
+            li.appendChild(btnGroup);
+            list.appendChild(li);
 
-                const deleteButton = document.createElement('button');
-                deleteButton.classList.add('delete');
-                deleteButton.innerHTML = `<img src="delete.svg" width="16" height="16">`;
-                deleteButton.onclick = () => deleteGoal(category, index);
-
-                btnGroup.appendChild(doneButton);
-                btnGroup.appendChild(inProgressButton);
-                btnGroup.appendChild(deleteButton);
-
-                li.appendChild(goalText);
-                li.appendChild(btnGroup);
-                list.appendChild(li);
-
-                if (goalObj.completed) {
-                    doneButton.classList.add('disabled');
-                    doneButton.disabled = true;
-                    inProgressButton.classList.add('disabled');
-                    inProgressButton.disabled = true;
-                } else if (goalObj.inProgress) {
-                    inProgressButton.classList.add('active');
-                    doneButton.classList.remove('disabled');
-                    doneButton.disabled = false;
-                } else {
-                    doneButton.classList.remove('disabled');
-                    doneButton.disabled = false;
-                    inProgressButton.classList.remove('disabled');
-                    inProgressButton.disabled = false;
-                }
-            });
-        }
-
-        console.log('Ukończone cele:', countgoals.completed);
-        console.log('Cele w trakcie:', countgoals.inProgress);
-        console.log('Łączna liczba celów:', countgoals.total);
-
-        // Obliczanie pozostałych celów
-            const remaining = countgoals.total - (countgoals.completed + countgoals.inProgress);
-
-        // Tworzenie lub aktualizacja wykresu
-        const ctx = document.getElementById('goalChart').getContext('2d');
-
-        // Jeśli wykres już istnieje, zniszcz go przed utworzeniem nowego
-        if (window.goalChart && typeof window.goalChart.destroy === 'function') {
-            window.goalChart.destroy();
-        }
-
-        window.goalChart = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                datasets: [{
-                    data: [countgoals.inProgress, countgoals.completed, remaining],
-                    backgroundColor: ['#FFA500', '#4CAF50', '#E0E0E0'],
-                    borderWidth: 0,
-                    borderRadius: 20
-                }]
-            },
-            options: {
-                cutout: '90%',
-                responsive: true,
-                plugins: {
-                    legend: {
-                        display: false
-                    },
-                    tooltip: {
-                        enabled: false
-                    }
-                }
+            if (goalObj.completed) {
+                doneButton.classList.add('disabled');
+                doneButton.disabled = true;
+                inProgressButton.classList.add('disabled');
+                inProgressButton.disabled = true;
+            } else if (goalObj.inProgress) {
+                inProgressButton.classList.add('active');
+                doneButton.classList.remove('disabled');
+                doneButton.disabled = false;
+            } else {
+                doneButton.classList.remove('disabled');
+                doneButton.disabled = false;
+                inProgressButton.classList.remove('disabled');
+                inProgressButton.disabled = false;
             }
         });
-
-        // Aktualizacja tekstu w środku wykresu
-        document.getElementById('chartCenterText').innerText = `${countgoals.completed}/${countgoals.total}`;
     }
-        
-            function startEditing(goalText, category, index) {
-            // Sprawdź, czy cel jest ukończony
-            if (goals[category][index].completed) {
-                alert('Nie można edytować ukończonego celu!');
-                return; // Zakończ funkcję, jeśli cel jest ukończony
-            }
 
-            const input = document.createElement('input');
-            input.type = 'text';
-            input.value = goalText.textContent;
-            input.style.backgroundColor = '#2c2c2c';
-            input.style.color = '#e0e0e0';
-            input.style.border = '2px solid';
-            input.style.outline = 'none';
-            input.style.borderColor = '#45a049';
-            input.style.borderRadius = '8px';
-            input.style.padding = '5px';
-            input.style.fontSize = '1rem';
-            input.style.width = '50%';
+    console.log('Ukończone cele:', countgoals.completed);
+    console.log('Cele w trakcie:', countgoals.inProgress);
+    console.log('Łączna liczba celów:', countgoals.total);
 
-            input.addEventListener('blur', () => saveEdit(input, goalText, category, index));
-            input.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    saveEdit(input, goalText, category, index);
+    // Obliczanie pozostałych celów
+    const remaining = countgoals.total - (countgoals.completed + countgoals.inProgress);
+
+    // Tworzenie lub aktualizacja wykresu
+    const ctx = document.getElementById('goalChart').getContext('2d');
+
+    // Jeśli wykres już istnieje, zniszcz go przed utworzeniem nowego
+    if (window.goalChart && typeof window.goalChart.destroy === 'function') {
+        window.goalChart.destroy();
+    }
+
+    window.goalChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            datasets: [{
+                data: [countgoals.inProgress, countgoals.completed, remaining],
+                backgroundColor: ['#FFA500', '#4CAF50', '#E0E0E0'],
+                borderWidth: 0,
+                borderRadius: 20
+            }]
+        },
+        options: {
+            cutout: '90%',
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    enabled: false
                 }
-            });
+            }
+        }
+    });
+
+    // Aktualizacja tekstu w środku wykresu
+    document.getElementById('chartCenterText').innerText = `${countgoals.completed}/${countgoals.total}`;
+}
+
+function startEditing(goalText, category, index) {
+    // Sprawdź, czy cel jest ukończony
+    if (goals[category][index].completed) {
+        alert('Nie można edytować ukończonego celu!');
+        return; // Zakończ funkcję, jeśli cel jest ukończony
+    }
+
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = goalText.textContent;
+    input.style.backgroundColor = '#2c2c2c';
+    input.style.color = '#e0e0e0';
+    input.style.border = '2px solid';
+    input.style.outline = 'none';
+    input.style.borderColor = '#45a049';
+    input.style.borderRadius = '8px';
+    input.style.padding = '5px';
+    input.style.fontSize = '1rem';
+    input.style.width = '50%';
+
+    input.addEventListener('blur', () => saveEdit(input, goalText, category, index));
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            saveEdit(input, goalText, category, index);
+        }
+    });
 
             goalText.parentElement.replaceChild(input, goalText);
             input.focus();
@@ -272,7 +272,7 @@
             const item = list.children[index];
         
             goals[category][index].completed = true;
-            goals[category][index].inProgress = false;  // Jeśli cel jest zakończony, to nie jest już w trakcie realizacji
+            goals[category][index].inProgress = false;  
             item.classList.add('completed');
             item.classList.remove('in-progress');
         
@@ -324,4 +324,61 @@
         }
         
         renderGoals();
+
+        const monthYearElement = document.getElementById('monthYear');
+        const datesElement = document.getElementById('dates');
+        
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+
+        let currentDate = new Date();
+
+        const updateCalendar = () =>{
+            const currentYear = currentDate.getFullYear();
+            const currentMonth = currentDate.getMonth();
+
+            const firstDay = new Date(currentYear, currentMonth, 0);
+            const lastDay = new Date(currentYear, currentMonth + 1, 0);
+            const totalDays = lastDay.getDate();
+            const firstDayIndex = firstDay.getDay();
+            const lastDayIndex = lastDay.getDay();
+
+            const monthYearString = currentDate.toLocaleString
+            ('default', {month: 'long', year: 'numeric'});
+            monthYearElement.textContent = monthYearString;
+
+            let datesHTML = '';
+
+            for(let i = firstDayIndex; i > 0; i--){
+                const prevDate = new Date(currentYear, currentMonth, 0 - i + 1);
+                datesHTML += `<div class="date inactive">${prevDate.getDate()}</div>`;
+            }
+
+            for(let i = 1; i <= totalDays; i++){
+                const date = new Date(currentYear, currentMonth, i);
+                const activeClass = date.toDateString() === new Date().toDateString() ? 'active' : '';
+                datesHTML += `<div class="date ${activeClass}">${i}</div>`;
+            }
+
+            for(let i = 1; i <= 7 - lastDayIndex; i++){
+                const nextDate = new Date(currentYear, currentMonth + 1, i);
+                datesHTML += `<div class="date inactive">${nextDate.getDate()}</div>`;
+            }
+
+            datesElement.innerHTML = datesHTML;
+        }
+
+        prevBtn.addEventListener('click', () =>{
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            updateCalendar();
+        });
+
+        nextBtn.addEventListener('click', () =>{
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            updateCalendar();
+        });
+
+        updateCalendar();
+        
+        
         
