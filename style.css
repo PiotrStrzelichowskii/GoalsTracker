@@ -112,9 +112,8 @@ h1 span:nth-child(18) {animation-delay: 1.8s;}
 }
 
 .grid2 {
-    display: grid;
-    grid-template-rows: auto;
-    grid-template-columns: auto;
+    display: flex;
+    flex-direction: column;
     gap: 1rem;
     max-height: 900px;
     overflow: hidden;
@@ -447,9 +446,6 @@ button.disabled {
         width: 100%;
     }
 
-    .grid2{
-        gap: 1rem;
-    }
 
     h1 {
         font-size: 2rem;
@@ -500,13 +496,12 @@ button.disabled {
         margin-bottom: 1rem;
         max-width: 100%;
         flex-direction: row;
-        font-size: 12px;
+        font-size: clamp(12px, 1.5vw, 14px);
     }
 
     .calendar{
         min-width: 100%;
         height: fit-content;
-        margin: 0;
     }
     
     .dates{
@@ -516,6 +511,7 @@ button.disabled {
     .date{
         padding: 6px;
         margin-bottom: 6px;
+        font-size: clamp(12px, 1.5vw, 14px);
     }
 
     /* Lista celów */
@@ -554,5 +550,8 @@ button.disabled {
         margin-bottom: 15px;
     }
    
+    .grid {
+        gap: 0rem;
+    }
 }
 
