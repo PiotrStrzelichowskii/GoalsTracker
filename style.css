@@ -95,7 +95,8 @@ h1 span:nth-child(18) {animation-delay: 1.8s;}
 .grid {
     display: grid;
     grid-template-columns: 3fr 2fr; 
-    gap: 0rem;      
+    gap: 0rem;
+    padding-bottom: 2rem;     
 }
 
 .container {
@@ -404,10 +405,11 @@ button.disabled {
         grid-template-columns: 1fr; 
         gap: 0rem;                  
         padding: 1rem;  
-        margin: 2rem;
+        padding-bottom: 2rem;
     }
     .container{
         margin-bottom: 0;
+        margin-top: 1rem;
     }
     .info-con{
         margin: 0;
@@ -444,6 +446,10 @@ button.disabled {
         width: 100%;
     }
 
+    .grid2{
+        gap: 1rem;
+    }
+
     h1 {
         font-size: 2rem;
     }
@@ -467,22 +473,26 @@ button.disabled {
     /* Kontener z celami */
     .container {
         padding: 1rem;
-        margin: 4rem 4rem 1rem 0.5rem;
+        display: flex;
+        margin: 0;
     }
 
     /* Kontener z wykresem i legendą */
     .info-con {
         flex-direction: column;
         padding: 1rem;
-        margin: 1rem 0.5rem;
         font-size: 14px;
-        margin-right: 0;
+        margin-bottom: 1rem;
     }
 
     .chart-container {
         max-width: 200px;
         height: 200px;
-        margin-top: 1rem;
+        margin-bottom: 0;
+    }
+
+    .grid2{
+        gap: 1rem;
     }
 
     .chart-center {
@@ -495,6 +505,21 @@ button.disabled {
         margin-bottom: 1rem;
         max-width: 100%;
         flex-direction: row;
+        font-size: 12px;
+    }
+
+    .calendar{
+        min-width: 100%;
+        height: fit-content;
+    }
+    
+    .dates{
+        gap: 4px;
+    }
+    
+    .date{
+        padding: 6px;
+        margin-bottom: 6px;
     }
 
     /* Lista celów */
@@ -532,5 +557,6 @@ button.disabled {
         font-size: 1.2rem;
         margin-bottom: 15px;
     }
+   
 }
 
